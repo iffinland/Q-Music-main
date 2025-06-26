@@ -1,0 +1,347 @@
+/* App.css */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content-wrapper {
+  display: flex;
+  flex-grow: 1; /* Võtab ruumi Headeri ja Playeri vahel */
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 1rem;
+  /* overflow-y: auto; Kui sisu on pikem */
+}
+
+/* Sidebar.css või App.css */
+
+.sidebar {
+  /* olemasolevad .sidebar stiilid (width, padding, border, background, flex-shrink) */
+  display: flex; /* Aitab sisu vertikaalselt joondada ja hallata */
+  flex-direction: column; /* Elemendid üksteise all */
+}
+
+.sidebar section { /* Üldine stiil sektsioonidele külgribas */
+  margin-bottom: 1.5rem;
+}
+.sidebar section:last-child {
+  margin-bottom: 0;
+}
+
+.stats-section h4,
+.user-section h3 { /* Pealkirjade stiilid */
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.stats-section p {
+  margin: 0.25rem 0;
+  font-size: 0.9em;
+  color: #555;
+}
+
+.user-avatar {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.user-avatar img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid #ddd; /* Väike ääris avatarile */
+}
+
+.user-avatar p {
+  font-weight: bold;
+  margin-top: 0.5rem;
+  font-size: 1em;
+}
+
+.user-menu ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.user-menu li {
+  margin-bottom: 0.5rem;
+}
+
+.user-menu a {
+  text-decoration: none;
+  color: #007bff; /* Või sinu teemavärv */
+  display: block; /* Et link võtaks terve rea laiuse */
+  padding: 0.25rem 0;
+}
+
+.user-menu a:hover {
+  text-decoration: underline;
+  color: #0056b3;
+}
+
+.login-prompt {
+  margin-top: 1.5rem;
+  text-align: center;
+  padding: 1rem;
+  background-color: #e9ecef; /* Helehall taust */
+  border-radius: 4px;
+}
+.login-prompt p {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+}
+.login-prompt button {
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.login-prompt button:hover {
+  background-color: #0056b3;
+}
+
+.future-content {
+  margin-top: auto; /* Lükkab selle sektsiooni külgriba lõppu, kui külgribal on display:flex ja flex-direction:column */
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
+  color: #777;
+  font-size: 0.85em;
+}
+
+/* Mobiilivaade */
+@media (max-width: 768px) {
+  .content-wrapper {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    order: -1; /* Tõstab külgriba main-content'i ette (visuaalselt Headeri alla) */
+    border-left: none;
+    border-bottom: 1px solid #ccc;
+  }
+}
+
+/* Header.css (või lisa App.css-i) */
+.app-header {
+  background-color: #333;
+  color: white;
+  padding: 1rem;
+  position: sticky; /* Või fixed, kui tahad, et see alati paigal püsiks, aga sticky on parem */
+  top: 0;
+  left: 0; /* Oluline fixed paigutuse jaoks */
+  right: 0; /* Oluline fixed paigutuse jaoks */
+  z-index: 1000;
+  display: flex; /* Muudame headeri flex konteineriks */
+  flex-direction: column; /* Elemendid üksteise alla */
+  gap: 0.5rem; /* Väike vahe ridade vahel */
+}
+
+.header-main-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%; /* Võtab terve laiuse */
+}
+
+.logo-link {
+  color: white;
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.header-auth-nav .login-button {
+  background-color: #555;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.header-auth-nav .login-button:hover {
+  background-color: #777;
+}
+
+.header-search-row {
+  width: 100%; /* Otsing võtab terve laiuse */
+}
+
+/* SearchBoxi enda stiilid (SearchBox.css või siin) */
+.search-form {
+  display: flex;
+  width: 100%;
+}
+.search-input {
+  flex-grow: 1;
+  padding: 0.75rem;
+  border: 1px solid #555;
+  border-radius: 4px 0 0 4px;
+  background-color: #444; /* Tumedam taust otsingule */
+  color: white;
+}
+.search-input::placeholder {
+  color: #bbb;
+}
+.search-button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background-color: #007bff; /* Või sinu brändi värv */
+  color: white;
+  cursor: pointer;
+  border-radius: 0 4px 4px 0;
+}
+.search-button:hover {
+  background-color: #0056b3;
+}
+
+
+.header-action-buttons {
+  display: flex;
+  gap: 0.75rem; /* Vahe nuppude vahel */
+  width: 100%; /* Nupud võtavad terve laiuse */
+  justify-content: center; /* Või flex-start, kui tahad vasakule */
+}
+
+.action-button {
+  flex-grow: 1; /* Nupud jagavad ruumi (kui soovid) */
+  max-width: 200px; /* Või muu sobiv laius, et nad liiga laiali ei läheks */
+  padding: 0.6rem 1rem;
+  background-color: #6c757d; /* Teine värv tegevusnuppudele */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+}
+.action-button:hover {
+  background-color: #5a6268;
+}
+
+/* App.css (veendu, et content-wrapper ja main-content on õigesti) */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content-wrapper {
+  flex-grow: 1; /* Võtab ruumi Headeri ja Playeri vahel */
+  /* display: flex; POLE ENAM VAJA, KUI KÜLGRIBA POLE */
+}
+
+.main-content {
+  /* flex-grow: 1; POLE ENAM VAJA, KUI content-wrapper pole flex */
+  padding: 1rem;
+}
+
+/* Mobiilivaate kohandused */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0.75rem; /* Väiksem padding mobiilis */
+  }
+
+  .header-main-row {
+    display: flex;
+    /* Võib-olla flex-direction: column ja align-items: center, kui logo ja login nupp ei mahu kõrvuti */
+  }
+
+  .header-action-buttons {
+    flex-direction: column; /* Nupud üksteise alla mobiilis */
+    align-items: stretch; /* Nupud võtavad terve laiuse */
+  }
+  .action-button {
+    max-width: none; /* Luba nuppudel võtta terve laius */
+  }
+}
+
+
+
+.logo-link {
+  color: white;
+  text-decoration: none;
+  font-size: 1.5rem;
+  margin-right: 1rem; /* Ruumi otsingukastile */
+}
+
+.search-container {
+  flex-grow: 1; /* Laseb otsingukastil võtta saadaoleva ruumi */
+  max-width: 400px; /* Piira otsingukasti laiust suurel ekraanil */
+  margin: 0.5rem 0; /* Ruumi mobiilivaates, kui murdub eraldi reale */
+}
+
+.search-form {
+  display: flex;
+}
+
+.search-input {
+  flex-grow: 1;
+  padding: 0.6rem;
+  border: none;
+  border-radius: 4px 0 0 4px; /* Ümarad nurgad vasakul */
+}
+
+.search-button {
+  padding: 0.6rem 1rem;
+  border: none;
+  background-color: #555;
+  color: white;
+  cursor: pointer;
+  border-radius: 0 4px 4px 0; /* Ümarad nurgad paremal */
+}
+.search-button:hover {
+  background-color: #777;
+}
+
+.header-nav {
+  display: flex;
+  align-items: center;
+}
+.header-nav .login-button,
+.header-nav .nav-link {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.5rem;
+  text-decoration: none;
+  margin-left: 0.5rem;
+}
+.header-nav .nav-link:hover {
+  text-decoration: underline;
+}
+
+
+/* Mobiilivaate kohandused Headerile */
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column; /* Kõik elemendid üksteise alla */
+    align-items: stretch; /* Venita elemendid laiusesse */
+  }
+  .logo-link {
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+  .search-container {
+    width: 100%; /* Otsing võtab terve laiuse */
+    max-width: none;
+    order: 1; /* Pane otsing logo alla, aga enne navi */
+    margin-bottom: 0.5rem;
+  }
+  .header-nav {
+    order: 2; /* Navigatsioon kõige alla headeris */
+    width: 100%;
+    justify-content: center; /* Keskele nupud */
+  }
+  .header-nav .user-menu {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+  }
+}
