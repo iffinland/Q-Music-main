@@ -173,34 +173,43 @@ const handleNavigateToAction = async (targetPath) => {
 
 
   return (
-    <div className="app-container">
-      <Header
-        isLoggedIn={isLoggedIn}
-        currentUser={currentUser}
-        onLoginLogoutClick={handleToggleLoginLogout}
-        onSearchSubmit={actualSearchHandler}
-        onNavigateToAction={handleNavigateToAction}
-      />
-      <div className="content-wrapper">
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<HomePage songs={songs} onSongSelect={handleSelectSong} />} />
-            <Route path="/search" element={<SearchResultsPage />} />
-            <Route
-              path="/add-music"
-              element={isLoggedIn ? <AddMusicPage /> : <Navigate to="/" replace />}
-            />
-            <Route
-              path="/create-playlist"
-              element={isLoggedIn ? <CreatePlaylistPage /> : <Navigate to="/" replace />}
-            />
-            <Route path="*" element={<div><h2>404 Lehte ei leitud</h2><Link to="/">Mine avalehele</Link></div>} />
-          </Routes>
-        </main>
-      </div>
-      <Player currentSong={selectedSong} />
+  <div className="app-container">
+    <Header /* ... props ... */ />
+
+    <div className="content-wrapper">
+      {/* PEAMINE SISU (kus on route'id) */}
+      <main className="main-content">
+        <Routes>
+          <Route path="/" element={<HomePage songs={songs} onSongSelect={handleSelectSong} />} />
+          {/* ... muud route'id ... */}
+        </Routes>
+      </main>
+
+      {/* KÜLGRIBA TAGASI */}
+      <aside className="sidebar">
+        <section className="stats-section">
+          <h4>Statistika</h4>
+          {/* ... statistika ... */}
+        </section>
+
+        <section className="actions-section">
+          <button onClick={() => handleNavigateToAction('/add-music')}>Lisa UUT muusikat</button>
+          <button onClick={() => handleNavigateToAction('/create-playlist')}>Lisa UUS playlist</button>
+        </section>
+
+        {isLoggedIn && currentUser && (
+          <section className="user-section">
+            {/* ... kasutaja info ... */}
+            <button onClick={handleLogout}>Logi välja</button>
+          </section>
+        )}
+      </aside>
     </div>
-  );
+
+    {/* PLAYER on nüüd eraldi, content-wrapperist väljas */}
+    <Player currentSong={selectedSong} />
+  </div>
+);
 }
 
 export default App;
