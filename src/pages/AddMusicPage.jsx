@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 // Siia tuleb päris API saatmise funktsioon
 // import { publishAudioTrack } from '../api/qortalApi'; // Hüpoteetiline
 
-function AddMusicPage() {
+function AddMusicPage({ currentUser }) {
   const [title, setTitle] = useState('');
   const [artist, setArtist] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);

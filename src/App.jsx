@@ -180,7 +180,10 @@ const handleNavigateToAction = async (targetPath) => {
       {/* PEAMINE SISU (kus on route'id) */}
       <main className="main-content">
         <Routes>
-          <Route path="/" element={<HomePage songs={songs} onSongSelect={handleSelectSong} />} />
+          <Route
+  path="/add-music"
+  element={isLoggedIn ? <AddMusicPage currentUser={currentUser} /> : <Navigate to="/" replace />}
+/>
           {/* ... muud route'id ... */}
         </Routes>
       </main>
