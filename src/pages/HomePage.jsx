@@ -1,24 +1,39 @@
 // src/pages/HomePage.jsx
 import React from 'react';
-import MusicList from '../components/MusicList';
+import MusicList from '../components/MusicList'; // Me kasutame seda uues stiilis
+// import PlaylistGrid from '../components/PlaylistGrid'; // Tulevikus playlistide jaoks
 
-// Võtame vastu onSongSelect funktsiooni ja songs andmed App.jsx-ist
 function HomePage({ songs, onSongSelect }) {
+  // Loome ajutised mock-andmed ka playlistide jaoks
+  const mockPlaylists = [
+    { id: 'pl1', name: 'Suve Hitis', songCount: 12 },
+    { id: 'pl2', name: 'Treni Muusika', songCount: 25 },
+    { id: 'pl3', name: 'Rahulikud Õhtud', songCount: 30 },
+    { id: 'pl4', name: 'Eesti Klassika', songCount: 50 },
+    { id: 'pl5', name: 'Rock on lahe', songCount: 18 },
+    { id: 'pl6', name: 'Uus ja huvitav', songCount: 22 },
+  ];
+
   return (
-    <div>
-      <section className="latest-uploads">
-        <h2>Viimati Üleslaetud Audio</h2>
-        {/* Edastame songs prop'i MusicListile nime all songsData (või sama nimega songs, kui soovid) */}
-        {/* Ja onSongSelect prop'i */}
-        <MusicList songsData={songs} onSongSelect={onSongSelect} />
+    <div className="homepage">
+      <section className="horizontal-scroll-section">
+        <h2>Viimati Lisatud</h2>
+        {/* Anname MusicListile spetsiaalse klassinime horisontaalse stiili jaoks */}
+        <MusicList songsData={songs} onSongSelect={onSongSelect} listClassName="horizontal-music-list" />
       </section>
 
-      <section className="latest-playlists" style={{ marginTop: '2rem' }}>
-        <h2>Viimati Loodud Playlistid</h2>
-        <p>Playlistide sektsioon (tuleb hiljem juurde)...</p>
+      <section className="horizontal-scroll-section">
+        <h2>Populaarsed Playlistid</h2>
+        <div className="horizontal-playlist-grid"> {/* Uus konteiner playlistidele */}
+          {mockPlaylists.map(playlist => (
+            <div key={playlist.id} className="playlist-card">
+              <h4>{playlist.name}</h4>
+              <p>{playlist.songCount} laulu</p>
+            </div>
+          ))}
+        </div>
       </section>
     </div>
   );
 }
-
 export default HomePage;
