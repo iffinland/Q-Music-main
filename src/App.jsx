@@ -116,18 +116,60 @@ function AppContent() {
     }
   };
 
-  // Ja ka see kasutab uut loginOrGetUserData funktsiooni
-  const handleNavigateToAction = async (targetPath) => {
-    let user = currentUser; // Võta praegune kasutaja
-    if (!isLoggedIn) {
-      // Kui pole sisse logitud, proovi sisse logida
-      user = await loginOrGetUserData();
-    }
-    // Kui sisselogimine õnnestus (või oli juba varem sisse logitud), siis navigeeri
-    if (user) {
+const handleNavigateToAction = async (targetPath) => {
+  // 1. Kontrolli, kas kasutaja on juba rakenduse mõistes sisse logitud.
+  if (isLoggedIn && currentUser) {
+    console.log(`Kasutaja ${currentUser.name || currentUser.address} on juba sisse logitud. Navigeerin -> ${targetPath}`);
+    navigate(targetPath);
+    return;
+  }
+
+  // 2. Kui kasutaja POLE sisse logitud, proovi tema andmeid pärida kasutades qortalRequest.
+  console.log("Proovin sisse logida kasutades qortalRequest...");
+
+  try {
+    //
+    // **** SEE ON NÜÜD KORREKTNE KOOD, MIS PÕHINEB SINU LEIUL ****
+    //
+    const userData = await qortalRequest({
+      action: "GET_USER_ACCOUNT",
+    });
+
+    // Kontrollime, kas saime vastuses kasutaja andmed
+    if (userData && userData.address) {
+      console.log(`Autentimine õnnestus! Aadress: ${userData.address}`);
+
+      // Uuendame rakenduse olekut
+      setIsLoggedIn(true);
+      // Salvestame aadressi ja publicKey. Nime me siit ei saa, aga see on OK.
+      // Nime saame hiljem eraldi küsida, kui vaja.
+      setCurrentUser({
+        address: userData.address,
+        publicKey: userData.publicKey,
+        name: userData.name || `Kasutaja ${userData.address.substring(0, 6)}...` // Ajutine nimi
+      });
+
+      alert(`Tere! Sinu Qortali konto (${userData.address.substring(0, 8)}...) on ühendatud.`);
+
+      // Nüüd navigeerime soovitud lehele
       navigate(targetPath);
+
+    } else {
+      // qortalRequest ei tagastanud oodatud andmeid.
+      throw new Error("qortalRequest ei tagastanud kasutaja andmeid.");
     }
-  };
+
+  } catch (error) {
+    // See blokk käivitub, kui qortalRequest viskab vea.
+    // See juhtub tõenäoliselt siis, kui kasutaja keeldub popupis luba andmast,
+    // või kui Qortali tarkvara ei tööta.
+    console.error("Qortali autentimise viga:", error);
+    alert(
+      "Sisselogimine ebaõnnestus või tühistati.\n\n" +
+      "Palun veendu, et sinu Qortali tarkvara töötab ja annad rakendusele loa oma konto kasutamiseks."
+    );
+  }
+};
 
 
   return (
