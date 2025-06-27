@@ -115,6 +115,107 @@
   font-size: 0.85em;
 }
 
+/* App.css */
+
+/* Üldine lehe seadistus */
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background-color: #121212; /* Tume taust, nagu Spotify */
+  color: #ffffff;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Võtab terve ekraani kõrguse */
+  overflow: hidden; /* Väldib topelt kerimisribasid */
+}
+
+/* Sisu ja külgriba wrapper */
+.content-wrapper {
+  display: flex;
+  flex-grow: 1; /* Võtab ruumi Headeri ja Playeri vahel */
+  overflow: hidden; /* Oluline, et sisemised kerimisribad töötaksid */
+}
+
+/* Peamine sisu ala */
+.main-content {
+  flex-grow: 1;
+  padding: 1.5rem;
+  overflow-y: auto; /* AINULT peamine sisu on vertikaalselt keritav */
+}
+
+/* Külgriba */
+.sidebar {
+  width: 250px;
+  flex-shrink: 0; /* Ära lase kahaneda */
+  background-color: #000000;
+  padding: 1.5rem;
+  overflow-y: auto; /* Luba külgribal kerida, kui sisu on pikk */
+}
+
+/* Playeri riba all */
+.player-bar { /* See klass peaks olema Player.jsx komponendi juur-elemendil */
+  height: 90px; /* Fikseeritud kõrgus */
+  flex-shrink: 0; /* Ära lase kahaneda */
+  background-color: #181818;
+  border-top: 1px solid #282828;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1rem;
+}
+
+/* HomePage horisontaalsed read */
+.horizontal-scroll-section {
+  margin-bottom: 2rem;
+}
+
+.horizontal-scroll-section h2 {
+  margin-bottom: 1rem;
+}
+
+.horizontal-music-list, .horizontal-playlist-grid {
+  display: flex;
+  overflow-x: auto; /* Luba horisontaalne kerimine */
+  gap: 1.5rem; /* Vahe elementide vahel */
+  padding-bottom: 1rem; /* Ruumi kerimisribale */
+}
+
+/* Stiilid laulu- ja playlisti-kaartidele */
+.song-item, .playlist-card {
+  flex: 0 0 160px; /* Fikseeritud laius, ei kasva ega kahane */
+  background-color: #181818;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.song-item:hover, .playlist-card:hover {
+  background-color: #282828;
+}
+
+/* Mobiilivaate kohandused */
+@media (max-width: 768px) {
+  .content-wrapper {
+    flex-direction: column; /* Sisu ja külgriba üksteise alla */
+  }
+
+  .sidebar {
+    width: 100%;
+    order: -1; /* Tõsta külgriba kõige üles (Headeri alla) */
+    border-left: none; /* Pole vaja */
+    height: auto; /* Automaatne kõrgus vastavalt sisule */
+    flex-shrink: 1;
+  }
+
+  .main-content {
+    padding: 1rem; /* Vähem paddingut mobiilis */
+  }
+}
+
 /* Mobiilivaade */
 @media (max-width: 768px) {
   .content-wrapper {
@@ -260,8 +361,6 @@
     max-width: none; /* Luba nuppudel võtta terve laius */
   }
 }
-
-
 
 .logo-link {
   color: white;
