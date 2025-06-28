@@ -1,13 +1,21 @@
-// src/components/Header.jsx - SAMM 3
+// src/components/Header.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import SearchBox from './SearchBox'; // Lisa import
+import SearchBox from './SearchBox';
 
-function Header({ isLoggedIn, currentUser, onLoginClick, onLogoutClick }) {
+function Header({
+  isLoggedIn,
+  currentUser,
+  onLoginClick,
+  onLogoutClick,
+  onSearchSubmit,
+  onNavigateToAction
+}) {
   return (
     <header className="app-header">
       <div className="header-main-row">
         <h1><Link to="/" className="logo-link">Q-Music</Link></h1>
+            <Link to="/songs" style={{color: 'white', marginRight: '1rem'}}>Sirvi Lugusid</Link>
         <nav className="header-auth-nav">
           {isLoggedIn && currentUser ? (
             <button onClick={onLogoutClick} className="login-button">Välju ({currentUser.name})</button>
@@ -16,20 +24,16 @@ function Header({ isLoggedIn, currentUser, onLoginClick, onLogoutClick }) {
           )}
         </nav>
       </div>
-      
-      {/* LISAME OTSINGUKASTI TAGASI */}
       <div className="header-search-row">
-        <SearchBox placeholderText="Otsi muusikat..." />
+        <SearchBox onActualSearch={onSearchSubmit} placeholderText="Otsi muusikat..." />
       </div>
-
       {isLoggedIn && (
         <div className="header-action-buttons">
-          <Link to="/add-music" className="action-button">Lisa UUT muusikat</Link>
-          <Link to="/create-playlist" className="action-button">Lisa UUS playlist</Link>
+          <button onClick={() => onNavigateToAction('/add-music')} className="action-button">Lisa UUT muusikat</button>
+          <button onClick={() => onNavigateToAction('/create-playlist')} className="action-button">Lisa UUS playlist</button>
         </div>
       )}
     </header>
   );
 }
-
 export default Header;
