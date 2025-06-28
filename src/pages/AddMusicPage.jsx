@@ -1,74 +1,92 @@
 // src/pages/AddMusicPage.jsx
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-// Siia tuleb päris API saatmise funktsioon
-// import { publishAudioTrack } from '../api/qortalApi'; // Hüpoteetiline
+// Eeldame, et qortalRequest on globaalselt kättesaadav
+/* global qortalRequest */
 
 function AddMusicPage({ currentUser }) {
+  const navigate = useNavigate();
+
+  // Olekud vormiväljadele
   const [title, setTitle] = useState('');
   const [artist, setArtist] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
 
   const handleFileChange = (event) => {
-    // Võtame esimese valitud faili
     if (event.target.files && event.target.files[0]) {
       setSelectedFile(event.target.files[0]);
     }
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault(); // Väldib vormi tavapärast saatmist ja lehe uuesti laadimist
+    event.preventDefault();
 
-    // Kontrollime, kas kõik vajalik on olemas
+    // Kontrollid
     if (!title || !artist || !selectedFile) {
       alert('Palun täida kõik väljad ja vali fail.');
       return;
     }
+    if (!currentUser || !currentUser.name) {
+      alert('Sisselogimisviga! Kasutaja nime ei leitud. Proovi uuesti sisse logida.');
+      return;
+    }
+    if (typeof qortalRequest === 'undefined') {
+      alert("Qortali API-t ei leitud. Palun ava rakendus Qortali UI kaudu.");
+      return;
+    }
 
     setIsUploading(true);
-    console.log('Alustan üleslaadimist...');
-    console.log('Pealkiri:', title);
-    console.log('Artist:', artist);
-    console.log('Fail:', selectedFile);
 
     try {
-      //
-      // TODO: Siia tuleb päris qortalRequest API kutse
-      //
-      // const result = await qortalRequest({
-      //   action: "PUBLISH_QDN_RESOURCE",
-      //   name: "KASUTAJA_NIMI_TULEB_STATE'IST", // sisselogitud kasutaja nimi
-      //   service: "AUDIO",
-      //   title: title,
-      //   description: `Lugu esitajalt ${artist}`, // Kirjeldus
-      //   file: selectedFile, // Või mingi muu viis faili edastamiseks
-      // });
-      // console.log("Qortal API vastus:", result);
+      // Loome unikaalse identifikaatori
+      const safeTitle = title.replace(/[^a-zA-Z0-9-]/g, '').toLowerCase();
+      const safeArtist = artist.replace(/[^a-zA-Z0-9-]/g, '').toLowerCase();
+      const identifier = `qmusic-${safeArtist}-${safeTitle}-${Date.now()}`;
 
-      // Simuleerime edukat üleslaadimist
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Ootame 2 sekundit
+      console.log('Alustan avaldamist Qortalisse järgmiste andmetega:');
+      console.log({
+        name: currentUser.name,
+        service: 'AUDIO',
+        identifier: identifier,
+        title: title,
+        description: `Lugu "${title}" esitajalt ${artist}.`,
+        file: selectedFile,
+      });
 
-      alert('Lugu on edukalt üles laaditud!');
-      // Võiksime kasutaja suunata tagasi avalehele või laulu lehele
-      // navigate('/');
-      // Tühjendame vormi
-      setTitle('');
-      setArtist('');
-      setSelectedFile(null);
-      event.target.reset(); // Tühjendab ka faili inputi
+      // **** PÄRIS API KUTSE ****
+      const result = await qortalRequest({
+        action: "PUBLISH_QDN_RESOURCE",
+        name: currentUser.name, // Kasutame sisselogitud kasutaja nime
+        service: "AUDIO",
+        identifier: identifier,
+        title: title,
+        description: `Lugu "${title}" esitajalt ${artist}.`,
+        file: selectedFile, // Edastame File objekti otse
+      });
+
+      console.log("Qortal API vastus:", result);
+
+      if (result === true) { // Qortal API tagastab sageli lihtsalt `true` edu korral
+         alert('Lugu on edukalt avaldatud Qortalisse! Sünkroniseerimine võrgus võib võtta aega.');
+         navigate('/'); // Suuname kasutaja avalehele
+      } else {
+         throw new Error("API ei tagastanud edukat vastust või toiming ebaõnnestus.");
+      }
 
     } catch (error) {
-      console.error('Üleslaadimise viga:', error);
-      alert('Üleslaadimine ebaõnnestus. Palun proovi uuesti.');
+      console.error('Avaldamise viga:', error);
+      alert(`Avaldamine ebaõnnestus: ${error.message || 'Palun proovi uuesti.'}`);
     } finally {
-      setIsUploading(false); // Lõpetame laadimise oleku igal juhul
+      setIsUploading(false);
     }
   };
 
   return (
     <div className="add-music-page">
       <h2>Lae Üles Uus Lugu</h2>
+      <p>Avaldaja: <strong>{currentUser ? currentUser.name : 'Pole sisse logitud'}</strong></p>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="title">Loo pealkiri</label>
@@ -93,19 +111,19 @@ function AddMusicPage({ currentUser }) {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="audioFile">Vali audiofail</label>
+          <label htmlFor="audioFile">Vali audiofail (nt .mp3)</label>
           <input
             type="file"
             id="audioFile"
             onChange={handleFileChange}
-            accept="audio/*" // Lubame ainult audiofaile
+            accept="audio/*"
             disabled={isUploading}
             required
           />
           {selectedFile && <p>Valitud fail: {selectedFile.name}</p>}
         </div>
-        <button type="submit" disabled={isUploading}>
-          {isUploading ? 'Laen üles...' : 'Lae Üles'}
+        <button type="submit" disabled={!currentUser || isUploading}>
+          {isUploading ? 'Avaldan...' : 'Avalda Qortalisse'}
         </button>
       </form>
     </div>

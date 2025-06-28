@@ -1,11 +1,11 @@
-// src/App.jsx
+// src/App.jsx - TÄIELIK JA PARANDATUD VERSIOON
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom';
-import { songs as initialMockSongs } from "./data/mockSongs"; // Mock andmed
+import { BrowserRouter, Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom';
 
 // Komponentide impordid
 import Header from './components/Header';
 import Player from './components/Player';
+import SearchBox from './components/SearchBox';
 
 // Lehtede impordid
 import HomePage from './pages/HomePage';
@@ -13,206 +13,127 @@ import AddMusicPage from './pages/AddMusicPage';
 import CreatePlaylistPage from './pages/CreatePlaylistPage';
 import SearchResultsPage from './pages/SearchResultsPage';
 
-// CSS impordid
+// Andmete ja stiilide impordid
+import { songs as initialMockSongs } from "./data/mockSongs";
 import './App.css';
 
-// Peamine App komponent, mis renderdab AppContent'i
+// ----------------------------------------------------------------
+// See kommentaar aitab ESLint'il mitte kurta tundmatu muutuja üle,
+// kui rakendus jookseb Qortali keskkonnas, kus see on globaalselt defineeritud.
+/* global qortalRequest */
+// ----------------------------------------------------------------
+
+
+// Peamine App komponent, mis seadistab routeri
 function App() {
-  return (<AppContent />);
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
+  );
 }
 
-// AppContent komponent, kus on enamus rakenduse loogikast ja JSX-ist
+
+// AppContent sisaldab kogu rakenduse loogikat ja on routeri sees
 function AppContent() {
   const navigate = useNavigate();
 
-  // Olekumuutujad
+  // Olekumuutujad (State)
+  const [songs, setSongs] = useState([]);
   const [selectedSong, setSelectedSong] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [songs, setSongs] = useState([]);
 
-  // Efekt laulude laadimiseks
+  // useEffect - laeb esmased laulud rakenduse käivitamisel
   useEffect(() => {
     setSongs(initialMockSongs);
   }, []);
 
-  // Efekt, mis proovib kasutajat automaatselt tuvastada rakenduse laadimisel
-  useEffect(() => {
-    // See funktsioon kutsutakse välja, kui rakendus esimest korda laeb
-    const autoLogin = async () => {
-      // Siia võiks panna tulevikus automaatse sisselogimise katse,
-      // aga praegu on parem, kui see toimub nupuvajutusel.
-      console.log("Rakendus laetud. Kasutaja pole autenditud.");
-    };
-    autoLogin();
-  }, []); // Tühi massiiv tähendab, et see jookseb ainult korra
-
-  // ----- HANDLER-FUNKTSIOONID -----
-
-  // See on UUS ja PEAMINE funktsioon autentimiseks
-  const loginOrGetUserData = async () => {
-    // Esiteks kontrollime, kas qortalRequest funktsioon on olemas
-    // Kuna me ei impordi seda, siis eeldame, et see on globaalsel window objektil
-    if (typeof qortalRequest === 'undefined') {
-      alert("Qortali API-t ei leitud. Palun veendu, et sinu Qortali tarkvara töötab ja oled keskkonnas, kus API on kättesaadav.");
-      return null; // Tagastame null, et anda teada ebaõnnestumisest
-    }
-
-    try {
-      console.log("Proovin käivitada qortalRequest({ action: 'GET_USER_ACCOUNT' })...");
-      // See peaks käivitama Qortali popupi, kui luba on vaja
-      const userData = await qortalRequest({ action: "GET_USER_ACCOUNT" });
-      console.log("GET_USER_ACCOUNT vastus:", userData);
-
-      if (userData && userData.address) {
-        setIsLoggedIn(true);
-        // Salvestame aadressi ja publicKey. Nime peame veel leidma.
-        const user = {
-          address: userData.address,
-          publicKey: userData.publicKey,
-          name: "Laen nime..." // Ajutine nimi
-        };
-        setCurrentUser(user);
-        alert(`Autentimine õnnestus! Aadress: ${userData.address}`);
-
-        // TODO: Tee lisapäring, et saada nime aadressi alusel, kui API seda võimaldab
-        // Näiteks:
-        // const namesData = await qortalRequest({ action: 'GET_ACCOUNT_NAMES', address: userData.address });
-        // if (namesData && namesData.length > 0) {
-        //   setCurrentUser({ ...user, name: namesData[0].name });
-        // } else {
-        //   setCurrentUser({ ...user, name: "Nimi puudub" });
-        // }
-
-        return user; // Tagastame kasutaja andmed edasiseks kasutamiseks
-      } else {
-        throw new Error("Kasutaja andmeid ei saadud või aadress puudub vastuses.");
-      }
-    } catch (error) {
-      console.error("Qortal API viga (GET_USER_ACCOUNT):", error);
-      setIsLoggedIn(false);
-      setCurrentUser(null);
-      alert("Qortaliga autentimine ebaõnnestus. Kasutaja keeldus või tekkis viga. Palun veendu, et oled Qortalis sisse logitud ja andnud loa.");
-      return null; // Tagastame null, et anda teada ebaõnnestumisest
-    }
-  };
+  // --- Handler-funktsioonid ---
 
   const handleSelectSong = (song) => {
     setSelectedSong(song);
   };
 
-  const actualSearchHandler = (query) => {
-    navigate(`/search?q=${encodeURIComponent(query)}`);
-  };
-
-  // Nüüd kasutab see uut loginOrGetUserData funktsiooni
-  const handleToggleLoginLogout = async () => {
-    if (isLoggedIn) {
-      setIsLoggedIn(false);
-      setCurrentUser(null);
-      alert("Oled välja logitud.");
-    } else {
-      await loginOrGetUserData(); // Kutsu peamist autentimisfunktsiooni
+  const actualSearchHandler = (searchTerm) => {
+    if (searchTerm.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
     }
   };
 
-const handleNavigateToAction = async (targetPath) => {
-  // 1. Kontrolli, kas kasutaja on juba rakenduse mõistes sisse logitud.
-  if (isLoggedIn && currentUser) {
-    console.log(`Kasutaja ${currentUser.name || currentUser.address} on juba sisse logitud. Navigeerin -> ${targetPath}`);
-    navigate(targetPath);
-    return;
-  }
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setCurrentUser(null);
+    alert("Oled välja logitud.");
+    navigate('/');
+  };
 
-  // 2. Kui kasutaja POLE sisse logitud, proovi tema andmeid pärida kasutades qortalRequest.
-  console.log("Proovin sisse logida kasutades qortalRequest...");
+  const handleLogin = async () => {
+    if (typeof qortalRequest === 'undefined') {
+      alert("Qortali API-t ei leitud. Palun ava rakendus Qortali UI kaudu, et sisse logida.");
+      return;
+    }
 
-  try {
-    //
-    // **** SEE ON NÜÜD KORREKTNE KOOD, MIS PÕHINEB SINU LEIUL ****
-    //
-    const userData = await qortalRequest({
-      action: "GET_USER_ACCOUNT",
-    });
+    try {
+      console.log("Käivitan qortalRequest({ action: 'GET_USER_ACCOUNT' })...");
+      const accountData = await qortalRequest({ action: "GET_USER_ACCOUNT" });
 
-    // Kontrollime, kas saime vastuses kasutaja andmed
-    if (userData && userData.address) {
-      console.log(`Autentimine õnnestus! Aadress: ${userData.address}`);
+      if (accountData && accountData.address) {
+        const names = await qortalRequest({ action: 'GET_NAMES_BY_ADDRESS', address: accountData.address });
+        const userName = (names && names.length > 0) ? names[0].name : `Kasutaja ${accountData.address.substring(0, 6)}...`;
 
-      // Uuendame rakenduse olekut
-      setIsLoggedIn(true);
-      // Salvestame aadressi ja publicKey. Nime me siit ei saa, aga see on OK.
-      // Nime saame hiljem eraldi küsida, kui vaja.
-      setCurrentUser({
-        address: userData.address,
-        publicKey: userData.publicKey,
-        name: userData.name || `Kasutaja ${userData.address.substring(0, 6)}...` // Ajutine nimi
-      });
+        const userToSet = { name: userName, address: accountData.address, publicKey: accountData.publicKey };
+        
+        setIsLoggedIn(true);
+        setCurrentUser(userToSet);
+        alert(`Tere, ${userToSet.name}! Sinu konto on ühendatud.`);
+      } else {
+        throw new Error("Kasutaja andmeid ei saadud või toiming tühistati.");
+      }
+    } catch (error) {
+      console.error("Qortali autentimise viga:", error);
+      alert(`Sisselogimine ebaõnnestus: ${error.message || "Tundmatu viga"}`);
+    }
+  };
 
-      alert(`Tere! Sinu Qortali konto (${userData.address.substring(0, 8)}...) on ühendatud.`);
-
-      // Nüüd navigeerime soovitud lehele
+  const handleNavigateToAction = async (targetPath) => {
+    if (isLoggedIn && currentUser) {
       navigate(targetPath);
-
-    } else {
-      // qortalRequest ei tagastanud oodatud andmeid.
-      throw new Error("qortalRequest ei tagastanud kasutaja andmeid.");
+      return;
     }
+    
+    alert("Selle toimingu tegemiseks pead olema sisse logitud. Proovin sind sisse logida...");
+    await handleLogin();
+    // Pärast sisselogimiskatset peab kasutaja uuesti nuppu vajutama, et navigeerida.
+    // See on lihtne ja selge voog.
+  };
 
-  } catch (error) {
-    // See blokk käivitub, kui qortalRequest viskab vea.
-    // See juhtub tõenäoliselt siis, kui kasutaja keeldub popupis luba andmast,
-    // või kui Qortali tarkvara ei tööta.
-    console.error("Qortali autentimise viga:", error);
-    alert(
-      "Sisselogimine ebaõnnestus või tühistati.\n\n" +
-      "Palun veendu, et sinu Qortali tarkvara töötab ja annad rakendusele loa oma konto kasutamiseks."
-    );
-  }
-};
-
-
+  // --- Renderdamine ---
+  
   return (
-  <div className="app-container">
-    <Header /* ... props ... */ />
+    <div className="app-container">
+      <Header
+        isLoggedIn={isLoggedIn}
+        currentUser={currentUser}
+        onLoginClick={handleLogin}
+        onLogoutClick={handleLogout}
+        onSearchSubmit={actualSearchHandler}
+        onNavigateToAction={handleNavigateToAction}
+      />
 
-    <div className="content-wrapper">
-      {/* PEAMINE SISU (kus on route'id) */}
       <main className="main-content">
         <Routes>
-          <Route
-  path="/add-music"
-  element={isLoggedIn ? <AddMusicPage currentUser={currentUser} /> : <Navigate to="/" replace />}
-/>
-          {/* ... muud route'id ... */}
+          <Route path="/" element={<HomePage songs={songs} onSongSelect={handleSelectSong} />} />
+          <Route path="/add-music" element={isLoggedIn ? <AddMusicPage currentUser={currentUser} /> : <Navigate to="/" replace />} />
+          <Route path="/create-playlist" element={isLoggedIn ? <CreatePlaylistPage currentUser={currentUser} /> : <Navigate to="/" replace />} />
+          <Route path="/search" element={<SearchResultsPage />} />
+          <Route path="*" element={<div><h2>404 - Lehte ei leitud</h2><Link to="/">Mine tagasi avalehele</Link></div>} />
         </Routes>
       </main>
 
-      {/* KÜLGRIBA TAGASI */}
-      <aside className="sidebar">
-        <section className="stats-section">
-          <h4>Statistika</h4>
-          {/* ... statistika ... */}
-        </section>
-
-        <section className="actions-section">
-          <button onClick={() => handleNavigateToAction('/add-music')}>Lisa UUT muusikat</button>
-          <button onClick={() => handleNavigateToAction('/create-playlist')}>Lisa UUS playlist</button>
-        </section>
-
-        {isLoggedIn && currentUser && (
-          <section className="user-section">
-            {/* ... kasutaja info ... */}
-            <button onClick={handleLogout}>Logi välja</button>
-          </section>
-        )}
-      </aside>
+      <Player currentSong={selectedSong} />
     </div>
-
-    {/* PLAYER on nüüd eraldi, content-wrapperist väljas */}
-    <Player currentSong={selectedSong} />
-  </div>
-);
+  );
 }
 
 export default App;

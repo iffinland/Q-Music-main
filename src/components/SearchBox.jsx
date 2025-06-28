@@ -1,35 +1,29 @@
-// src/components/SearchBox.jsx
+// src/components/SearchBox.jsx - SAMM 3
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Impordi useNavigate
 
-// Eeldame, et 'placeholderText' ja 'onActualSearch' tulevad propsidena
-function SearchBox({ onActualSearch, placeholderText = "Otsi laule, playliste..." }) {
+function SearchBox({ placeholderText = "Otsi..." }) {
   const [searchTerm, setSearchTerm] = useState('');
-
-  const handleInputChange = (event) => {
-    const newSearchTerm = event.target.value;
-    setSearchTerm(newSearchTerm);
-    // Võiksime siin ka reaalajas otsingut teha (debounced), aga praegu mitte
-  };
+  const navigate = useNavigate(); // Võta navigate funktsioon kasutusele
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (searchTerm.trim() && typeof onActualSearch === 'function') {
-      onActualSearch(searchTerm.trim());
+    if (searchTerm.trim()) {
+      // Kasuta navigate funktsiooni, et suunata kasutaja otsingulehele
+      navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="search-form"> {/* Lisa klassinimi stiilimiseks */}
+    <form onSubmit={handleSubmit} className="search-form">
       <input
         type="search"
+        className="search-input"
         placeholder={placeholderText}
         value={searchTerm}
-        onChange={handleInputChange}
-        className="search-input" // Lisa klassinimi stiilimiseks
+        onChange={(e) => setSearchTerm(e.target.value)}
       />
-      <button type="submit" className="search-button"> {/* Lisa klassinimi stiilimiseks */}
-        Otsi
-      </button>
+      <button type="submit" className="search-button">Otsi</button>
     </form>
   );
 }

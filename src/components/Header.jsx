@@ -1,38 +1,31 @@
-// src/components/Header.jsx
+// src/components/Header.jsx - SAMM 3
 import React from 'react';
 import { Link } from 'react-router-dom';
-import SearchBox from './SearchBox'; // Eeldusel, et SearchBox on components kaustas
+import SearchBox from './SearchBox'; // Lisa import
 
-// Propsid: isLoggedIn, currentUser (nimi kuvamiseks), onLoginLogoutClick, onSearchSubmit, onNavigateToAction
-function Header({ isLoggedIn, currentUser, onLoginLogoutClick, onSearchSubmit, onNavigateToAction }) {
+function Header({ isLoggedIn, currentUser, onLoginClick, onLogoutClick }) {
   return (
     <header className="app-header">
-      <div className="header-main-row"> {/* Rida logole ja sisselogimise nupule */}
-        <h1>
-          <Link to="/" className="logo-link">Q-Music</Link>
-        </h1>
+      <div className="header-main-row">
+        <h1><Link to="/" className="logo-link">Q-Music</Link></h1>
         <nav className="header-auth-nav">
-          <button onClick={onLoginLogoutClick} className="login-button">
-            {isLoggedIn && currentUser ? `Välju (${currentUser.name})` : 'Logi sisse Qortaliga'}
-          </button>
+          {isLoggedIn && currentUser ? (
+            <button onClick={onLogoutClick} className="login-button">Välju ({currentUser.name})</button>
+          ) : (
+            <button onClick={onLoginClick} className="login-button">Logi sisse Qortaliga</button>
+          )}
         </nav>
       </div>
-
-      <div className="header-search-row"> {/* Rida otsingukastile */}
-        <SearchBox onActualSearch={onSearchSubmit} placeholderText="Otsi muusikat..." />
+      
+      {/* LISAME OTSINGUKASTI TAGASI */}
+      <div className="header-search-row">
+        <SearchBox placeholderText="Otsi muusikat..." />
       </div>
 
-      {/* Tegevusnupud, kuvatakse ainult sisselogitud kasutajale */}
       {isLoggedIn && (
         <div className="header-action-buttons">
-          <button onClick={() => onNavigateToAction('/add-music')} className="action-button">
-            Lisa UUT muusikat
-          </button>
-          <button onClick={() => onNavigateToAction('/create-playlist')} className="action-button">
-            Lisa UUS playlist
-          </button>
-          {/* Siia võib lisada ka lingi profiililehele vms, kui see on headeris */}
-          {/* <Link to="/profile" className="action-button as-link">Minu Profiil</Link> */}
+          <Link to="/add-music" className="action-button">Lisa UUT muusikat</Link>
+          <Link to="/create-playlist" className="action-button">Lisa UUS playlist</Link>
         </div>
       )}
     </header>
