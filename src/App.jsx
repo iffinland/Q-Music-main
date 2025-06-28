@@ -1,4 +1,4 @@
-// src/App.jsx - TÄIELIK JA PARANDATUD VERSIOON
+// src/App.jsx - LÕPLIK PARANDUS AUTENTIMISELE
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom';
 
@@ -17,12 +17,7 @@ import SearchResultsPage from './pages/SearchResultsPage';
 import { songs as initialMockSongs } from "./data/mockSongs";
 import './App.css';
 
-// ----------------------------------------------------------------
-// See kommentaar aitab ESLint'il mitte kurta tundmatu muutuja üle,
-// kui rakendus jookseb Qortali keskkonnas, kus see on globaalselt defineeritud.
 /* global qortalRequest */
-// ----------------------------------------------------------------
-
 
 // Peamine App komponent, mis seadistab routeri
 function App() {
@@ -33,24 +28,22 @@ function App() {
   );
 }
 
-
 // AppContent sisaldab kogu rakenduse loogikat ja on routeri sees
 function AppContent() {
   const navigate = useNavigate();
 
-  // Olekumuutujad (State)
+  // Olekumuutujad
   const [songs, setSongs] = useState([]);
   const [selectedSong, setSelectedSong] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
-  // useEffect - laeb esmased laulud rakenduse käivitamisel
+  // Efektid
   useEffect(() => {
     setSongs(initialMockSongs);
   }, []);
 
-  // --- Handler-funktsioonid ---
-
+  // Handler-funktsioonid
   const handleSelectSong = (song) => {
     setSelectedSong(song);
   };
@@ -70,23 +63,46 @@ function AppContent() {
 
   const handleLogin = async () => {
     if (typeof qortalRequest === 'undefined') {
-      alert("Qortali API-t ei leitud. Palun ava rakendus Qortali UI kaudu, et sisse logida.");
+      alert("Qortali API-t ei leitud. Palun ava rakendus Qortali UI kaudu.");
       return;
     }
 
     try {
-      console.log("Käivitan qortalRequest({ action: 'GET_USER_ACCOUNT' })...");
+      console.log("Käivitan GET_USER_ACCOUNT...");
       const accountData = await qortalRequest({ action: "GET_USER_ACCOUNT" });
 
       if (accountData && accountData.address) {
-        const names = await qortalRequest({ action: 'GET_NAMES_BY_ADDRESS', address: accountData.address });
-        const userName = (names && names.length > 0) ? names[0].name : `Kasutaja ${accountData.address.substring(0, 6)}...`;
+        console.log("Sain konto aadressi:", accountData.address);
 
-        const userToSet = { name: userName, address: accountData.address, publicKey: accountData.publicKey };
+        let userName = `Kasutaja ${accountData.address.substring(0, 6)}...`;
+        
+        try {
+          console.log(`Käivitan GET_ACCOUNT_NAMES aadressiga ${accountData.address}`);
+          const namesData = await qortalRequest({
+            action: 'GET_ACCOUNT_NAMES',
+            address: accountData.address
+          });
+          
+          if (namesData && namesData.length > 0) {
+            userName = namesData[0].name;
+            console.log("Leidsin nime:", userName);
+          } else {
+            console.log("Aadressiga seotud nimesid ei leitud.");
+          }
+        } catch (nameError) {
+          console.warn("Kasutaja nime pärimisel tekkis viga:", nameError);
+        }
+
+        const userToSet = {
+          name: userName,
+          address: accountData.address,
+          publicKey: accountData.publicKey
+        };
         
         setIsLoggedIn(true);
         setCurrentUser(userToSet);
         alert(`Tere, ${userToSet.name}! Sinu konto on ühendatud.`);
+
       } else {
         throw new Error("Kasutaja andmeid ei saadud või toiming tühistati.");
       }
@@ -104,12 +120,9 @@ function AppContent() {
     
     alert("Selle toimingu tegemiseks pead olema sisse logitud. Proovin sind sisse logida...");
     await handleLogin();
-    // Pärast sisselogimiskatset peab kasutaja uuesti nuppu vajutama, et navigeerida.
-    // See on lihtne ja selge voog.
   };
-
-  // --- Renderdamine ---
   
+  // Renderdamine
   return (
     <div className="app-container">
       <Header
