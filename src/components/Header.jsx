@@ -16,7 +16,7 @@ function Header({
       <div className="header-main-row">
         <h1><Link to="/" className="logo-link">Q-Music</Link></h1>
             <Link to="/songs" style={{color: 'white', marginRight: '1rem'}}>Sirvi Lugusid</Link>
-        <nav className="header-auth-nav">
+                    <nav className="header-auth-nav">
           {isLoggedIn && currentUser ? (
             <button onClick={onLogoutClick} className="login-button">Välju ({currentUser.name})</button>
           ) : (
