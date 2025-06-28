@@ -1,4 +1,4 @@
-// src/pages/AddMusicPage.jsx
+// src/pages/AddMusicPage.jsx - Lisatud logimine API vastuse jaoks
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -45,34 +45,33 @@ function AddMusicPage({ currentUser }) {
       const safeArtist = artist.replace(/[^a-zA-Z0-9-]/g, '').toLowerCase();
       const identifier = `qmusic-${safeArtist}-${safeTitle}-${Date.now()}`;
 
-      console.log('Alustan avaldamist Qortalisse järgmiste andmetega:');
-      console.log({
-        name: currentUser.name,
-        service: 'AUDIO',
-        identifier: identifier,
-        title: title,
-        description: `Lugu "${title}" esitajalt ${artist}.`,
-        file: selectedFile,
-      });
-
-      // **** PÄRIS API KUTSE ****
-      const result = await qortalRequest({
+      const requestObject = {
         action: "PUBLISH_QDN_RESOURCE",
-        name: currentUser.name, // Kasutame sisselogitud kasutaja nime
+        name: currentUser.name,
         service: "AUDIO",
         identifier: identifier,
         title: title,
         description: `Lugu "${title}" esitajalt ${artist}.`,
-        file: selectedFile, // Edastame File objekti otse
-      });
+        file: selectedFile,
+      };
 
-      console.log("Qortal API vastus:", result);
+      console.log('Saadan Qortalisse järgmise päringu:', requestObject);
+      
+      // **** PÄRIS API KUTSE ****
+      const result = await qortalRequest(requestObject);
 
-      if (result === true) { // Qortal API tagastab sageli lihtsalt `true` edu korral
+      // **** OLULINE LOGIMINE ****
+      // See rida näitab meile brauseri konsoolis täpselt, mida API tagastas.
+      console.log("Qortal API tagastas (result):", result);
+      // **** **** **** **** ****
+
+      // Kontrollime, kas vastus oli rangelt 'true'
+      if (result === true) {
          alert('Lugu on edukalt avaldatud Qortalisse! Sünkroniseerimine võrgus võib võtta aega.');
-         navigate('/'); // Suuname kasutaja avalehele
+         navigate('/');
       } else {
-         throw new Error("API ei tagastanud edukat vastust või toiming ebaõnnestus.");
+         // Kui vastus ei olnud 'true', siis viskame vea koos tagastatud väärtusega
+         throw new Error(`API ei tagastanud edukat vastust (true), vaid: ${JSON.stringify(result)}`);
       }
 
     } catch (error) {
@@ -111,7 +110,7 @@ function AddMusicPage({ currentUser }) {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="audioFile">Vali audiofail (ext .mp3)</label>
+          <label htmlFor="audioFile">Vali audiofail (nt .mp3)</label>
           <input
             type="file"
             id="audioFile"
