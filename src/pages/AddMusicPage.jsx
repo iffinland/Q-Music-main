@@ -111,7 +111,7 @@ function AddMusicPage({ currentUser }) {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="audioFile">Vali audiofail (nt .mp3)</label>
+          <label htmlFor="audioFile">Vali audiofail (ext .mp3)</label>
           <input
             type="file"
             id="audioFile"
