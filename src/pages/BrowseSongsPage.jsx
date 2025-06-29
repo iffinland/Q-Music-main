@@ -1,20 +1,19 @@
-// src/pages/BrowseSongsPage.jsx - ÜLI-LIHTNE VERSIOON
+// src/pages/BrowseSongsPage.jsx - UUS JA LIHTNE VERSIOON
 import React from 'react';
+import MusicList from '../components/MusicList'; // Taaskasutame oma head MusicList komponenti
 
-function BrowseSongsPage() {
-  // Selles versioonis EI OLE ühtegi hooki ega loogikat.
-  // See on lihtsalt staatiline JSX.
-  
+function BrowseSongsPage({ songs, onSongSelect }) {
   return (
     <div className="page-container browse-page">
-      <h2>Sirvi Lugusid (Testversioon)</h2>
-
-      <p>
-        Kui sa seda lehte näed, siis route'imine ja komponendi importimine töötavad.
-        Viga on keerulisemas loogikas, mille me ajutiselt eemaldasime.
-      </p>
-
-      {/* Me ei kuva siin praegu laule ega midagi muud dünaamilist */}
+      <h2>Kõik Lood</h2>
+      <p>Siin on nimekiri kõikidest saadaolevatest lugudest.</p>
+      
+      {/* Kasutame MusicList komponenti, aga anname talle klassinime, et muuta paigutust */}
+      <MusicList
+        songsData={songs}
+        onSongSelect={onSongSelect}
+        listClassName="song-grid" // See klass teeb sellest ruudustiku
+      />
     </div>
   );
 }

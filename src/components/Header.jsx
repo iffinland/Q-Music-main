@@ -1,22 +1,18 @@
-// src/components/Header.jsx
+// src/components/Header.jsx - LÕPLIK VERSIOON KOOS SIRVIMISE LINGIGA
 import React from 'react';
 import { Link } from 'react-router-dom';
 import SearchBox from './SearchBox';
 
-function Header({
-  isLoggedIn,
-  currentUser,
-  onLoginClick,
-  onLogoutClick,
-  onSearchSubmit,
-  onNavigateToAction
-}) {
+function Header({ isLoggedIn, currentUser, onLoginClick, onLogoutClick, onSearchSubmit, onNavigateToAction }) {
   return (
     <header className="app-header">
       <div className="header-main-row">
         <h1><Link to="/" className="logo-link">Q-Music</Link></h1>
-            <Link to="/songs" style={{color: 'white', marginRight: '1rem'}}>Sirvi Lugusid</Link>
-                    <nav className="header-auth-nav">
+        <nav>
+          {/* **** UUS LINK ON TAGASI **** */}
+          <Link to="/songs" style={{color: 'white', marginRight: '1rem'}}>Sirvi Lugusid</Link>
+        </nav>
+        <nav className="header-auth-nav">
           {isLoggedIn && currentUser ? (
             <button onClick={onLogoutClick} className="login-button">Välju ({currentUser.name})</button>
           ) : (

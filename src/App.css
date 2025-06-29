@@ -203,58 +203,23 @@ body {
 }
 
 /* --- BROWSE SONGS --- */
+/* Lisa see oma App.css faili lõppu */
+
 .browse-page h2 {
   margin-bottom: 1.5rem;
-}
-
-.alphabet-filter {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
   border-bottom: 1px solid #333;
+  padding-bottom: 1rem;
 }
 
-.alphabet-filter button {
-  background-color: #282828;
-  color: #fff;
-  border: 1px solid #555;
-  border-radius: 4px;
-  padding: 0.5rem 0.75rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.alphabet-filter button:hover {
-  background-color: #3c3c3c;
-}
-
-.alphabet-filter button.active {
-  background-color: #1DB954; /* Spotify roheline aktiivsele nupule */
-  border-color: #1DB954;
-  font-weight: bold;
-}
-
+/* See reegel muudab MusicListi välimust AINULT sirvimise lehel */
 .song-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 1.5rem;
 }
 
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 2rem;
-}
-
-.pagination button {
-  padding: 0.5rem 1rem;
-  /* ... sarnased stiilid nagu teistel nuppudel ... */
-}
-.pagination button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+/* Eemaldame song-item'ilt fikseeritud laiuse, kui see on grid'i sees */
+.song-grid .song-item {
+  flex: none; /* Nullime flex omadused */
+  width: auto; /* Laseme gridil laiuse määrata */
 }
