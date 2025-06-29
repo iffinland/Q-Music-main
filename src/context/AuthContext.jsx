@@ -1,24 +1,19 @@
-// src/context/AuthContext.jsx - EEMALDATUD ROUTERI SÕLTUVUS
+// src/context/AuthContext.jsx
 import React, { createContext, useState, useContext } from 'react';
-// import { useNavigate } from 'react-router-dom'; // **** EEMALDAME SELLE IMPORDI ****
-
 /* global qortalRequest */
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  // const navigate = useNavigate(); // **** EEMALDAME SELLE HOOKI ****
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
   const handleLogin = async () => {
-    // ... (see funktsioon jääb samaks) ...
     if (typeof qortalRequest === 'undefined') { alert("Qortali API-t ei leitud."); return; }
     try {
       const accountData = await qortalRequest({ action: "GET_USER_ACCOUNT" });
       if (accountData && accountData.address) {
-        const namesData = await qortalRequest({ action: 'GET_NAMES_BY_ADDRESS', address: accountData.address });
+        const namesData = await qortalRequest({ action: 'GET_ACCOUNT_NAMES', address: accountData.address });
         const userName = (namesData && namesData.length > 0) ? namesData[0].name : `Kasutaja ${accountData.address.substring(0, 6)}...`;
         const userToSet = { name: userName, address: accountData.address, publicKey: accountData.publicKey };
         setIsLoggedIn(true);
@@ -28,13 +23,10 @@ export const AuthProvider = ({ children }) => {
     } catch (error) { alert(`Sisselogimine ebaõnnestus: ${error.message}`); }
   };
 
-  // **** OLULINE MUUDATUS SIIN ****
-  // handleLogout ei kasuta enam navigate'i. See ainult muudab olekut.
   const handleLogout = () => {
     setIsLoggedIn(false);
     setCurrentUser(null);
     alert("Oled välja logitud.");
-    // Navigeerimise eest hoolitseb nüüd komponent, mis logout'i kutsub.
   };
 
   const value = {
