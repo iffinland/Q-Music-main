@@ -1,4 +1,4 @@
-// src/App.jsx - LÕPLIK
+// src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
@@ -12,14 +12,10 @@ import HomePage from './pages/HomePage';
 import { songs as initialMockSongs } from "./data/mockSongs";
 import './App.css';
 
-// Me ei vaja enam AppWrapperit ega AppContentit. App on nüüd peamine komponent.
 function App() {
   const navigate = useNavigate();
-
-  // Autentimisinfo tuleb Contextist
-  const { isLoggedIn, currentUser, login, logout, isAuthLoading } = useAuth();
+  const { isLoggedIn, currentUser, login, logout } = useAuth();
   
-  // Rakenduse spetsiifiline olek jääb siia
   const [songs, setSongs] = useState([]);
   const [selectedSong, setSelectedSong] = useState(null);
 
@@ -28,28 +24,37 @@ function App() {
   const handleSelectSong = (song) => setSelectedSong(song);
 
   const handleLogoutAndNavigate = () => {
-    logout(); // Kutsub contexti funktsiooni, mis MUUDAB AINULT OLEKUT
-    navigate('/'); // See komponent, olles Routeri sees, VASTUTAB NAVIGEERIMISE EEST
+    logout();
+    navigate('/');
   };
-
+  
+  const handleNavigateToAction = async (targetPath) => {
+    if (isLoggedIn) {
+      navigate(targetPath);
+    } else {
+      alert("Selleks pead olema sisse logitud. Proovin sind sisse logida...");
+      const user = await login(); // Ootame, kuni login funktsioon lõpetab
+      if (user) {
+        // Kui sisselogimine õnnestus, võime kasutaja kohe edasi suunata
+        navigate(targetPath);
+      }
+    }
+  };
+  
   return (
     <div className="app-container">
-      {/* Edastame App-spetsiifilised handlerid propsidena */}
-      <Header onLogoutClick={handleLogoutAndNavigate} />
-      
+      <Header onLogoutClick={handleLogoutAndNavigate} onNavigateToAction={handleNavigateToAction} />
       <div className="content-wrapper">
         <main className="main-content">
           <Routes>
             <Route path="/" element={<HomePage songs={songs} onSongSelect={handleSelectSong} />} />
             <Route path="/add-music" element={isLoggedIn ? <AddMusicPage /> : <Navigate to="/" />} />
             <Route path="/create-playlist" element={isLoggedIn ? <CreatePlaylistPage /> : <Navigate to="/" />} />
-            {/* ... ülejäänud route'id ... */}
+            {/* ... teised route'id ... */}
           </Routes>
         </main>
-        
         <Sidebar />
       </div>
-
       <Player currentSong={selectedSong} />
     </div>
   );
