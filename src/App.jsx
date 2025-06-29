@@ -1,7 +1,8 @@
-// src/App.jsx - LISATUD PLAYLISTIDE ROUTE
+// src/App.jsx - PARANDATUD Sisselogimisloogikaga
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom';
 
+// Komponendid ja lehed
 import Header from './components/Header';
 import Player from './components/Player';
 import HomePage from './pages/HomePage';
@@ -9,8 +10,9 @@ import AddMusicPage from './pages/AddMusicPage';
 import CreatePlaylistPage from './pages/CreatePlaylistPage';
 import SearchResultsPage from './pages/SearchResultsPage';
 import BrowseSongsPage from './pages/BrowseSongsPage';
-import BrowsePlaylistsPage from './pages/BrowsePlaylistsPage'; // Uus import
+import BrowsePlaylistsPage from './pages/BrowsePlaylistsPage';
 
+// Andmed ja stiilid
 import { songs as initialMockSongs } from "./data/mockSongs";
 import './App.css';
 
@@ -31,13 +33,46 @@ function AppContent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
-  useEffect(() => { setSongs(initialMockSongs); }, []);
+  useEffect(() => {
+    setSongs(initialMockSongs);
+  }, []);
 
   const handleSelectSong = (song) => setSelectedSong(song);
   const actualSearchHandler = (searchTerm) => { if (searchTerm.trim()) navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`); };
   const handleLogout = () => { setIsLoggedIn(false); setCurrentUser(null); alert("Oled välja logitud."); navigate('/'); };
-  const handleLogin = async () => { /* Sinu töötav handleLogin kood siin */ };
-  const handleNavigateToAction = async (targetPath) => { /* Sinu töötav handleNavigateToAction kood siin */ };
+
+  // **** SIIN ON PARANDATUD JA TAASTATUD KOOD ****
+  const handleLogin = async () => {
+    if (typeof qortalRequest === 'undefined') {
+      alert("Qortali API-t ei leitud. Palun ava rakendus Qortali UI kaudu.");
+      return;
+    }
+    try {
+      const accountData = await qortalRequest({ action: "GET_USER_ACCOUNT" });
+      if (accountData && accountData.address) {
+        const namesData = await qortalRequest({ action: 'GET_ACCOUNT_NAMES', address: accountData.address });
+        const userName = (namesData && namesData.length > 0) ? namesData[0].name : `Kasutaja ${accountData.address.substring(0, 6)}...`;
+        const userToSet = { name: userName, address: accountData.address, publicKey: accountData.publicKey };
+        setIsLoggedIn(true);
+        setCurrentUser(userToSet);
+        alert(`Tere, ${userToSet.name}! Sinu konto on ühendatud.`);
+      } else {
+        throw new Error("Kasutaja andmeid ei saadud või toiming tühistati.");
+      }
+    } catch (error) {
+      alert(`Sisselogimine ebaõnnestus: ${error.message || "Tundmatu viga"}`);
+    }
+  };
+
+  const handleNavigateToAction = async (targetPath) => {
+    if (isLoggedIn && currentUser) {
+      navigate(targetPath);
+      return;
+    }
+    alert("Selle toimingu tegemiseks pead olema sisse logitud. Proovin sind sisse logida...");
+    await handleLogin();
+  };
+  // **** PARANDUS LÕPPEB SIIN ****
 
   return (
     <div className="app-container">
