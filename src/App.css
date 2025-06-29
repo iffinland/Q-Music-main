@@ -223,3 +223,43 @@ body {
   flex: none; /* Nullime flex omadused */
   width: auto; /* Laseme gridil laiuse määrata */
 }
+
+/* --- Browse Playlist --- */
+/* Lisa see App.css lõppu */
+
+.playlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.5rem;
+}
+
+.playlist-card {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #181818;
+  border-radius: 8px;
+  padding: 1rem;
+  transition: background-color 0.2s;
+}
+.playlist-card:hover {
+  background-color: #282828;
+}
+
+.playlist-card h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.playlist-card p {
+  margin: 0;
+  color: #b3b3b3;
+}
+
+.playlist-owner {
+  font-size: 0.8em;
+  color: #888;
+  margin-top: 1rem;
+}

@@ -1,4 +1,4 @@
-// src/components/Header.jsx - LÕPLIK VERSIOON KOOS SIRVIMISE LINGIGA
+// src/components/Header.jsx - LISATUD PLAYLISTIDE LINK
 import React from 'react';
 import { Link } from 'react-router-dom';
 import SearchBox from './SearchBox';
@@ -9,8 +9,8 @@ function Header({ isLoggedIn, currentUser, onLoginClick, onLogoutClick, onSearch
       <div className="header-main-row">
         <h1><Link to="/" className="logo-link">Q-Music</Link></h1>
         <nav>
-          {/* **** UUS LINK ON TAGASI **** */}
           <Link to="/songs" style={{color: 'white', marginRight: '1rem'}}>Sirvi Lugusid</Link>
+          <Link to="/playlists" style={{color: 'white', marginRight: '1rem'}}>Sirvi Playliste</Link>
         </nav>
         <nav className="header-auth-nav">
           {isLoggedIn && currentUser ? (

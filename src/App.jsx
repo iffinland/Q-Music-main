@@ -1,17 +1,16 @@
-// src/App.jsx - LÕPLIK VERSIOON KOOS SIRVIMISE LEHEGA
+// src/App.jsx - LISATUD PLAYLISTIDE ROUTE
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom';
 
-// Komponendid ja lehed
 import Header from './components/Header';
 import Player from './components/Player';
 import HomePage from './pages/HomePage';
 import AddMusicPage from './pages/AddMusicPage';
 import CreatePlaylistPage from './pages/CreatePlaylistPage';
 import SearchResultsPage from './pages/SearchResultsPage';
-import BrowseSongsPage from './pages/BrowseSongsPage'; // Uus import
+import BrowseSongsPage from './pages/BrowseSongsPage';
+import BrowsePlaylistsPage from './pages/BrowsePlaylistsPage'; // Uus import
 
-// Andmed ja stiilid
 import { songs as initialMockSongs } from "./data/mockSongs";
 import './App.css';
 
@@ -32,9 +31,7 @@ function AppContent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
-  useEffect(() => {
-    setSongs(initialMockSongs);
-  }, []);
+  useEffect(() => { setSongs(initialMockSongs); }, []);
 
   const handleSelectSong = (song) => setSelectedSong(song);
   const actualSearchHandler = (searchTerm) => { if (searchTerm.trim()) navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`); };
@@ -58,10 +55,8 @@ function AppContent() {
           <Route path="/add-music" element={isLoggedIn ? <AddMusicPage currentUser={currentUser} /> : <Navigate to="/" replace />} />
           <Route path="/create-playlist" element={isLoggedIn ? <CreatePlaylistPage currentUser={currentUser} /> : <Navigate to="/" replace />} />
           <Route path="/search" element={<SearchResultsPage />} />
-          
-          {/* **** UUS ROUTE ON TAGASI **** */}
           <Route path="/songs" element={<BrowseSongsPage songs={songs} onSongSelect={handleSelectSong} />} />
-
+          <Route path="/playlists" element={<BrowsePlaylistsPage />} />
           <Route path="*" element={<div><h2>404 - Lehte ei leitud</h2><Link to="/">Mine tagasi avalehele</Link></div>} />
         </Routes>
       </main>
