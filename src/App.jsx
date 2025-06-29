@@ -1,47 +1,99 @@
-// src/App.jsx - Täielik UI vundament
+// src/App.jsx - TAGASI LIHTSA JA TÖÖTAVA VERSIOONI JUURDE
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
-// ... ülejäänud impordid ...
 
-function App() { return ( <HashRouter> <AuthProvider> <AppContent /> </AuthProvider> </HashRouter> ); }
+// Komponendid ja lehed
+import Header from './components/Header';
+import Player from './components/Player';
+import Sidebar from './components/Sidebar';
+import HomePage from './pages/HomePage';
+import AddMusicPage from './pages/AddMusicPage';
+import CreatePlaylistPage from './pages/CreatePlaylistPage';
+import SearchResultsPage from './pages/SearchResultsPage';
+import BrowseSongsPage from './pages/BrowseSongsPage';
+import BrowsePlaylistsPage from './pages/BrowsePlaylistsPage';
+import PlaylistDetailPage from './pages/PlaylistDetailPage';
+import SongDetailPage from './pages/SongDetailPage';
 
-function AppContent() {
+// Andmed ja stiilid
+import { songs as initialMockSongs } from "./data/mockSongs";
+import './App.css';
+
+/* global qortalRequest */
+
+function AppWrapper() {
+  return (
+    <HashRouter>
+      <App />
+    </HashRouter>
+  );
+}
+
+function App() {
   const navigate = useNavigate();
-  const { isLoggedIn, currentUser, login, logout } = useAuth();
+
+  // Olek
   const [songs, setSongs] = useState([]);
   const [selectedSong, setSelectedSong] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => { setSongs(initialMockSongs); }, []);
-  const handleSelectSong = (song) => setSelectedSong(song);
 
+  // Handlerid
+  const handleSelectSong = (song) => setSelectedSong(song);
   const actualSearchHandler = (searchTerm) => { if (searchTerm.trim()) navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`); };
-  const handleLogoutAndNavigate = () => { logout(); navigate('/'); };
   
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setCurrentUser(null);
+    alert("Oled välja logitud.");
+    navigate('/');
+  };
+
+  const handleLogin = async () => {
+    if (typeof qortalRequest === 'undefined') {
+      alert("Qortali API-t ei leitud."); return;
+    }
+    try {
+      const accountData = await qortalRequest({ action: "GET_USER_ACCOUNT" });
+      if (accountData?.address) {
+        const namesData = await qortalRequest({ action: 'GET_ACCOUNT_NAMES', address: accountData.address });
+        const userName = namesData?.[0]?.name || `Kasutaja ${accountData.address.substring(0, 6)}...`;
+        const userToSet = { name: userName, address: accountData.address, publicKey: accountData.publicKey };
+        setIsLoggedIn(true);
+        setCurrentUser(userToSet);
+        alert(`Tere, ${userToSet.name}!`);
+      } else { throw new Error("Kasutaja andmeid ei saadud."); }
+    } catch (error) { alert(`Sisselogimine ebaõnnestus: ${error.message}`); }
+  };
+
   const handleNavigateToAction = async (targetPath) => {
     if (isLoggedIn) {
       navigate(targetPath);
     } else {
-      alert("Selle toimingu tegemiseks pead olema sisse logitud.");
-      await login();
+      alert("Selleks pead olema sisse logitud.");
+      await handleLogin();
     }
   };
   
   return (
     <div className="app-container">
-      <Header 
-        onLogoutClick={handleLogoutAndNavigate}
-        onNavigateToAction={handleNavigateToAction}
-        // Lisame otsingu-handler'i tagasi
+      <Header
+        isLoggedIn={isLoggedIn}
+        currentUser={currentUser}
+        onLoginClick={handleLogin}
+        onLogoutClick={handleLogout}
         onSearchSubmit={actualSearchHandler}
+        onNavigateToAction={handleNavigateToAction}
       />
+      
       <div className="content-wrapper">
         <main className="main-content">
           <Routes>
-            {/* ... kõik route'id on siin ... */}
             <Route path="/" element={<HomePage songs={songs} onSongSelect={handleSelectSong} />} />
-            <Route path="/add-music" element={isLoggedIn ? <AddMusicPage /> : <Navigate to="/" replace />} />
-            <Route path="/create-playlist" element={isLoggedIn ? <CreatePlaylistPage /> : <Navigate to="/" replace />} />
+            <Route path="/add-music" element={isLoggedIn ? <AddMusicPage currentUser={currentUser} /> : <Navigate to="/" replace />} />
+            <Route path="/create-playlist" element={isLoggedIn ? <CreatePlaylistPage currentUser={currentUser} /> : <Navigate to="/" replace />} />
             <Route path="/search" element={<SearchResultsPage />} />
             <Route path="/songs" element={<BrowseSongsPage songs={songs} onSongSelect={handleSelectSong} />} />
             <Route path="/playlists" element={<BrowsePlaylistsPage />} />
@@ -50,10 +102,16 @@ function AppContent() {
             <Route path="*" element={<div><h2>404</h2></div>} />
           </Routes>
         </main>
-        <Sidebar />
+        
+        <Sidebar 
+          isLoggedIn={isLoggedIn} 
+          currentUser={currentUser}
+        />
       </div>
+
       <Player currentSong={selectedSong} />
     </div>
   );
 }
-export default App;
+
+export default AppWrapper;

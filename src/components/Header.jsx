@@ -1,12 +1,9 @@
-// src/components/Header.jsx - Lõplik
+// src/components/Header.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import SearchBox from './SearchBox';
-import { useAuth } from '../context/AuthContext';
 
-function Header({ onLogoutClick, onNavigateToAction, onSearchSubmit }) {
-  const { isLoggedIn, currentUser, login } = useAuth();
-  
+function Header({ isLoggedIn, currentUser, onLoginClick, onLogoutClick, onSearchSubmit, onNavigateToAction }) {
   return (
     <header className="app-header">
       <div className="header-main-row">
@@ -20,12 +17,12 @@ function Header({ onLogoutClick, onNavigateToAction, onSearchSubmit }) {
           {isLoggedIn && currentUser ? (
             <button onClick={onLogoutClick} className="login-button">Välju ({currentUser.name})</button>
           ) : (
-            <button onClick={login} className="login-button">Logi sisse Qortaliga</button>
+            <button onClick={onLoginClick} className="login-button">Logi sisse Qortaliga</button>
           )}
         </nav>
       </div>
       <div className="header-search-row">
-        <SearchBox onActualSearch={onSearchSubmit} placeholderText="Otsi muusikat..." />
+        <SearchBox onActualSearch={onSearchSubmit} />
       </div>
       {isLoggedIn && (
         <div className="header-action-buttons">
@@ -36,4 +33,5 @@ function Header({ onLogoutClick, onNavigateToAction, onSearchSubmit }) {
     </header>
   );
 }
+
 export default Header;

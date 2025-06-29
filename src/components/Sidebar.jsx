@@ -1,18 +1,21 @@
-// src/components/Sidebar.jsx - KASUTAB useAuth HOOKI
+// src/components/Sidebar.jsx
 import React from 'react';
-import { useAuth } from '../context/AuthContext'; // **** UUS IMPORT ****
+import { Link } from 'react-router-dom';
 
-// Komponent ei vaja enam propse
-function Sidebar() {
-  // Küsime vajalikud väärtused otse contextist
-  const { isLoggedIn, currentUser } = useAuth();
-
-  const stats = { /* ... */ };
+function Sidebar({ isLoggedIn, currentUser }) {
+  const stats = {
+    songs: 123,
+    playlists: 15,
+    publishers: 7
+  };
 
   return (
     <aside className="sidebar">
       <section className="stats-section">
-        {/* ... statistika ... */}
+        <h4>Statistika</h4>
+        <p>Songs: {stats.songs}</p>
+        <p>Playlists: {stats.playlists}</p>
+        <p>Publishers: {stats.publishers}</p>
       </section>
 
       {isLoggedIn && currentUser && (
@@ -23,7 +26,10 @@ function Sidebar() {
           <p className="user-name">{currentUser.name}</p>
         </section>
       )}
-      {/* ... ülejäänud sisu ... */}
+
+      <section className="future-content">
+        <p><em>(Siia tuleb hiljem muud põnevat...)</em></p>
+      </section>
     </aside>
   );
 }
