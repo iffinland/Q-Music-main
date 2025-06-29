@@ -483,3 +483,20 @@ body {
   padding-top: 2rem;
   border-top: 1px solid #333;
 }
+
+/* Header menu button styles */
+.header-link, .header-link-special {
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.header-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.header-link-special {
+  color: #ffc107; /* Kollane testlingile */
+}
