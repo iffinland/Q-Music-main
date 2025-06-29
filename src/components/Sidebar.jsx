@@ -1,14 +1,9 @@
 // src/components/Sidebar.jsx
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
-function Sidebar({ isLoggedIn, currentUser }) {
-  const stats = {
-    songs: 123,
-    playlists: 15,
-    publishers: 7
-  };
-
+function Sidebar() {
+  const { isLoggedIn, currentUser, stats } = useAuth();
   return (
     <aside className="sidebar">
       <section className="stats-section">
@@ -17,19 +12,11 @@ function Sidebar({ isLoggedIn, currentUser }) {
         <p>Playlists: {stats.playlists}</p>
         <p>Publishers: {stats.publishers}</p>
       </section>
-
       {isLoggedIn && currentUser && (
         <section className="user-section">
-          <div className="user-avatar">
-            <img src={`https://via.placeholder.com/80/cccccc/000000?text=${currentUser.name.substring(0, 1)}`} alt="User Avatar" />
-          </div>
-          <p className="user-name">{currentUser.name}</p>
+          {/* ... kasutaja info ... */}
         </section>
       )}
-
-      <section className="future-content">
-        <p><em>(Siia tuleb hiljem muud põnevat...)</em></p>
-      </section>
     </aside>
   );
 }
