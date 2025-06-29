@@ -308,3 +308,48 @@ body {
 .vertical-music-list .song-item:hover {
   background-color: #282828;
 }
+
+/* SongDetailPage styles */
+.song-detail-page .song-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.song-detail-page .song-artwork img {
+  width: 150px;
+  height: 150px;
+  border-radius: 8px;
+}
+
+.song-detail-page .song-info h1 {
+  font-size: 2.5rem;
+  margin: 0.5rem 0;
+}
+
+.song-detail-page .song-info p {
+  margin: 0;
+  color: #b3b3b3;
+}
+
+.play-button {
+  margin-top: 1rem;
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  background-color: #1DB954; /* Spotify roheline */
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: transform 0.1s ease-in-out;
+}
+.play-button:hover {
+  transform: scale(1.05);
+}
+
+.song-details-body {
+  padding-top: 2rem;
+  border-top: 1px solid #333;
+}

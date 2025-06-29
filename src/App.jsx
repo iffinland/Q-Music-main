@@ -1,4 +1,4 @@
-// src/App.jsx - LISATUD PLAYLISTI DETAILVAATE ROUTE
+// src/App.jsx - LISATUD LAULU DETAILVAATE ROUTE
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom';
 
@@ -11,7 +11,8 @@ import CreatePlaylistPage from './pages/CreatePlaylistPage';
 import SearchResultsPage from './pages/SearchResultsPage';
 import BrowseSongsPage from './pages/BrowseSongsPage';
 import BrowsePlaylistsPage from './pages/BrowsePlaylistsPage';
-import PlaylistDetailPage from './pages/PlaylistDetailPage'; // Uus import
+import PlaylistDetailPage from './pages/PlaylistDetailPage';
+import SongDetailPage from './pages/SongDetailPage'; // Uus import
 
 // Andmed ja stiilid
 import { songs as initialMockSongs } from "./data/mockSongs";
@@ -60,9 +61,10 @@ function AppContent() {
           <Route path="/search" element={<SearchResultsPage />} />
           <Route path="/songs" element={<BrowseSongsPage songs={songs} onSongSelect={handleSelectSong} />} />
           <Route path="/playlists" element={<BrowsePlaylistsPage />} />
-          
-          {/* **** UUS DÜNAAMILINE ROUTE ON SIIN **** */}
           <Route path="/playlist/:playlistId" element={<PlaylistDetailPage onSongSelect={handleSelectSong} />} />
+          
+          {/* **** UUS DÜNAAMILINE ROUTE LAULULE **** */}
+          <Route path="/song/:songId" element={<SongDetailPage onSongSelect={handleSelectSong} />} />
 
           <Route path="*" element={<div><h2>404 - Lehte ei leitud</h2><Link to="/">Mine tagasi avalehele</Link></div>} />
         </Routes>
